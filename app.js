@@ -65,14 +65,6 @@ function getWeather(url) {
     .catch((error) => console.error(error));
 }
 
-function initWeather() {
-  getLocation();
-  getWeather(
-    // `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}`
-    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
-  );
-}
-
 document.addEventListener("DOMContentLoaded", function () {
   getLocation();
   searchButton.addEventListener("click", function () {
