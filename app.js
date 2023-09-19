@@ -10,14 +10,6 @@ const weatherIcon = document.getElementById("weatherIcon");
 
 var lat, lon;
 
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition, showError);
-  } else {
-    alert("Geolocation is not supported by this browser.");
-  }
-}
-
 function showError(error) {
   switch (error.code) {
     case error.PERMISSION_DENIED:
@@ -34,12 +26,22 @@ function showError(error) {
       break;
   }
 }
+
 function showPosition(position) {
   lat = position.coords.latitude;
   lon = position.coords.longitude;
   console.log("Your current position is:");
   console.log("latitue: " + position.coords.latitude);
   console.log("longitude: " + position.coords.longitude);
+}
+
+async function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition, showError);
+    console.log("success");
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
 }
 
 function getWeather(url) {
@@ -65,7 +67,8 @@ function getWeather(url) {
 function initWeather() {
   getLocation();
   getWeather(
-    `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}`
+    // `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}`
+    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
   );
 }
 
