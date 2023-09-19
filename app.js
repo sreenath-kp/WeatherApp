@@ -8,15 +8,7 @@ const humidity = document.getElementById("humidity");
 const windSpeed = document.getElementById("wind");
 const weatherIcon = document.getElementById("weatherIcon");
 
-let lat, lon;
-
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition, showError);
-  } else {
-    alert("Geolocation is not supported by this browser.");
-  }
-}
+var lat, lon;
 
 function showError(error) {
   switch (error.code) {
@@ -34,26 +26,33 @@ function showError(error) {
       break;
   }
 }
-function showPosition(position) {
+
+function initWeather(position) {
   lat = position.coords.latitude;
   lon = position.coords.longitude;
-  console.log("Your current position is:");
-  console.log("latitue: " + position.coords.latitude);
-  console.log("longitude: " + position.coords.longitude);
+  getWeather(
+    // `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}`
+    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
+  );
 }
-function initWeather() {
-  getLocation();
-  fetch(
-    // `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
-    `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}`
-  )
+
+async function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(initWeather, showError);
+    console.log("success");
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+
+function getWeather(url) {
+  console.log(url);
+  fetch(url)
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
       cityName.textContent = `${data.name}`;
-      temperature.textContent = `${Math.round(
-        data.main.temp - 273.15
-      )}°C`;
+      temperature.textContent = `${Math.round(data.main.temp - 273.15)}°C`;
       description.textContent = `${data.weather[0].main}`;
       humidity.textContent = `Humidity - ${data.main.humidity}%`;
       windSpeed.textContent = `Wind - ${data.wind.speed}m/s`;
@@ -68,34 +67,15 @@ function initWeather() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  initWeather();
+  getLocation();
   searchButton.addEventListener("click", function () {
     const city = cityInput.value;
     if (city.length === 0) {
       alert("Please enter a city name");
       return;
     }
-
-    fetch(
+    getWeather(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        cityName.textContent = `${data.name}`;
-        temperature.textContent = `${Math.round(
-          data.main.temp - 273.15
-        )}°C`;
-        description.textContent = `${data.weather[0].main}`;
-        humidity.textContent = `Humidity - ${data.main.humidity}%`;
-        windSpeed.textContent = `Wind - ${data.wind.speed}m/s`;
-
-        // Set weather icon
-        const iconCode = data.weather[0].icon;
-        const iconUrl = `http://openweathermap.org/img/w/${iconCode}.png`;
-        weatherIcon.src = iconUrl;
-        weatherIcon.alt = `Weather Icon: ${data.weather[0].description}`;
-      })
-      .catch((error) => console.error(error));
+    );
   });
 });
