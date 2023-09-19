@@ -46,7 +46,6 @@ async function getLocation() {
 }
 
 function getWeather(url) {
-  console.log(url);
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
@@ -64,6 +63,14 @@ function getWeather(url) {
       weatherIcon.alt = `Weather Icon: ${data.weather[0].description}`;
     })
     .catch((error) => console.error(error));
+}
+
+function initWeather() {
+  getLocation();
+  getWeather(
+    // `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey}`
+    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`
+  );
 }
 
 document.addEventListener("DOMContentLoaded", function () {
